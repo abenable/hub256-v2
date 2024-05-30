@@ -1,10 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from '../../components/Charts/ChartOne';
 import TableOne from '../../components/Tables/TableOne';
 import DefaultLayout from '../../layout/DefaultLayout';
+import axios from 'axios';
 
 const Hub256: React.FC = () => {
+  const [subscribers, setSubscribers] = useState<number>(0);
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/users/subscribers`);
+        setSubscribers(response.data.length);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -58,7 +76,7 @@ const Hub256: React.FC = () => {
 
         <CardDataStats
           title="Total Subscribers"
-          total="3.456"
+          total={subscribers}
           rate="0.95%"
           levelDown
         >
