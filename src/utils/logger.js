@@ -18,7 +18,7 @@ const logger = createLogger({
   format: combine(
     splat(),
     timestamp({
-      format: () => moment.utc().format('YYYY-MM-DD HH:mm:ss') + ' UTC',
+      format: () => moment.utc().add(3, 'hours').format('YYYY-MM-DD HH:mm:ss') + ' EAT',
     }),
     colorize(),
     winstonTimestampColorize({ color: 'cyan' }),
