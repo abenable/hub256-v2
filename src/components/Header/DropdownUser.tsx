@@ -6,6 +6,16 @@ import UserOne from '../../images/user/user-01.png';
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const userInfo = {
+    username: 'abenable',
+    email: 'dev@hub256.live',
+    profilePic: 'linkToImage',
+    role: 'admin',
+    post: '32',
+    about:
+      'new Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet. Etiam dictum dapibus ultricies. Sed vel aliquet libero. Nunc a augue fermentum, pharetra ligula sed, aliquam lacus.',
+  };
+
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
 
@@ -45,9 +55,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {userInfo.username}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{userInfo.role}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -124,7 +134,7 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              My Contacts
+              My Blogs
             </Link>
           </li>
           <li>
