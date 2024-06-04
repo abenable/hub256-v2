@@ -5,9 +5,23 @@ interface BreadcrumbProps {
 const Breadcrumb = ({ pageName }: BreadcrumbProps) => {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="text-title-md2 font-semibold text-black dark:text-white">
-        {pageName}
-      </h2>
+      <div className="flex flex-row">
+        <h2 className="text-title-md2 font-semibold text-black dark:text-white">
+          {pageName}
+        </h2>
+        <span>
+          {pageName === 'Profile' ? (
+            <Link
+              to="/editprofile"
+              className="inline-flex items-center justify-center rounded-full bg-primary py-1 px-6 text-center font-medium text-white hover:bg-opacity-90 lg:px-6 xl:px-6 mx-4"
+            >
+              Edit
+            </Link>
+          ) : (
+            <></>
+          )}
+        </span>
+      </div>
 
       <nav>
         <ol className="flex items-center gap-2">
