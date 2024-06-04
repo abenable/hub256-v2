@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../../layout/DefaultLayout';
+import axios from 'axios';
 
 const SignIn: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API_URL}/auth/register`, { email, password });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <DefaultLayout>
       <Breadcrumb pageName="Sign In" />
@@ -23,8 +37,10 @@ const SignIn: React.FC = () => {
                   </label>
                   <div className="relative">
                     <input
+                      value={email}
                       type="email"
-                      placeholder="Enter your email"
+                      onChange={(e: any) => setEmail(e.target.value)}
+                      placeholder="Email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-2 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -50,12 +66,14 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
+                    Password
                   </label>
                   <div className="relative">
                     <input
                       type="password"
-                      placeholder="6+ Characters, 1 Capital letter"
+                      value={password}
+                      onChange={(e: any) => setPassword(e.target.value)}
+                      placeholder="Password"
                       className="w-full rounded-lg border border-stroke bg-transparent py-2 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
 
@@ -86,6 +104,7 @@ const SignIn: React.FC = () => {
                 <div className="mb-5">
                   <input
                     type="submit"
+                    onSubmit={handleSubmit}
                     value="Sign In"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-2 text-white transition hover:bg-opacity-90"
                   />
