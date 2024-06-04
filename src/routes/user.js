@@ -82,7 +82,6 @@ router.get('/subscribers', async (req, res, next) => {
   try {
     const subscribers = await SubscriberModel.find({ active: true });
     const emails = subscribers.map((item) => item.email);
-    logger.info('Retrieved subscribers');
     res.status(200).json(emails);
   } catch (error) {
     logger.error(error);
