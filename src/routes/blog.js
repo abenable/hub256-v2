@@ -34,8 +34,7 @@ router.post('/post', protect, async (req, res, next) => {
 router.get('/all', async (req, res, next) => {
   try {
     const blogs = await BlogModel.find();
-    logger.info('Retrieved all blogs:', blogs);
-
+    logger.info('Retrieved all blogs', blogs);
     res.status(200).json(blogs);
   } catch (error) {
     logger.error(error);
