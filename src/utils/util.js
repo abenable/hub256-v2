@@ -4,7 +4,8 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 
 export const getDirname = (moduleUrl) => {
-  return path.dirname(fileURLToPath(moduleUrl));
+  return path.dirname
+    (fileURLToPath(moduleUrl));
 };
 
 export const signToken = (id) => {
