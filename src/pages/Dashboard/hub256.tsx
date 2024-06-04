@@ -7,13 +7,14 @@ import axios from 'axios';
 
 const Hub256: React.FC = () => {
   const [subscribers, setSubscribers] = useState<number>(0);
+  const [blogs, setBlogs] = useState<number>(0);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/users/subscribers`);
+        const response = await axios.get(`${API_URL}/user/subscribers`);
         setSubscribers(response.data.length);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -23,15 +24,22 @@ const Hub256: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/blog/all`);
+        setBlogs(response.data.length);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats
-          title="Total Visits"
-          total="$3.456K"
-          rate="0.43%"
-          levelUp
-        >
+        <CardDataStats title="Visits" total={3000} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -50,7 +58,7 @@ const Hub256: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Blogs" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Blogs" total={blogs} rate="4.35%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -75,7 +83,7 @@ const Hub256: React.FC = () => {
         </CardDataStats>
 
         <CardDataStats
-          title="Total Subscribers"
+          title="Subscribers"
           total={subscribers}
           rate="0.95%"
           levelDown
