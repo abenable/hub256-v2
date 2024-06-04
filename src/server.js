@@ -10,15 +10,15 @@ import hpp from 'hpp';
 import { ErrorHandler } from './controllers/error.js';
 import logger from './utils/logger.js';
 import router from './controllers/routes.js';
-import { limiter } from './utils/util.js';
+import { getDirname, limiter } from './utils/util.js';
+import path from 'path';
 
 dotenv.config();
 
 const port = process.env.PORT;
-const uri =
-    process.env.NODE_ENV === 'development'
-        ? process.env.LOCAL_URI
-        : process.env.URI;
+const uri = process.env.URI;
+
+const __dirname = getDirname(import.meta.url);
 
 const app = express();
 
@@ -45,6 +45,13 @@ app.use(hpp());
 
 //Routes
 app.use('/', router);
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + '../dist/index.html'));
+});
 
 // Error handling middleware
 app.use(ErrorHandler);
