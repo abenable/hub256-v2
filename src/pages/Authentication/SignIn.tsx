@@ -13,7 +13,7 @@ const SignIn: React.FC = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/auth/register`, { email, password });
+      await axios.post(`${API_URL}/auth/login`, { email, password });
     } catch (error) {
       console.error(error);
     }
@@ -30,7 +30,7 @@ const SignIn: React.FC = () => {
                 Sign In
               </h2>
 
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
@@ -102,17 +102,18 @@ const SignIn: React.FC = () => {
                 </div>
 
                 <div className="mb-5">
-                  <input
+                  <button
                     type="submit"
-                    onSubmit={handleSubmit}
                     value="Sign In"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-2 text-white transition hover:bg-opacity-90"
-                  />
+                  >
+                    Sign In
+                  </button>
                 </div>
                 <div className="mt-4 text-center">
                   <p>
                     Don’t have any account?{' '}
-                    <Link to="/auth/signup" className="text-primary">
+                    <Link to="/register" className="text-primary">
                       Sign Up
                     </Link>
                   </p>
