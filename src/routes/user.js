@@ -1,4 +1,5 @@
 import express from 'express';
+import axios from 'axios';
 import { protect, restrictTo } from '../controllers/auth.js';
 import { ApiError } from '../controllers/error.js';
 import { SubscriberModel } from '../models/subscribers.js';
@@ -11,6 +12,7 @@ import {
 } from '../controllers/user.js';
 
 const router = express.Router();
+const Token = process.env.CLOUDFLARE_TOKEN;
 
 router.delete(
   '/delete/:userId',
@@ -85,6 +87,33 @@ router.get('/subscribers', async (req, res, next) => {
     res.status(200).json(emails);
   } catch (error) {
     logger.error(error);
+    next(new ApiError(500, 'internal server error'));
+  }
+});
+
+router.get('/pageViews', async (req, res, next) => {
+  const data = {
+    "query": "query { viewer { zones(filter: {zoneTag: \"cec05905563ee4ccbcb1e2df8185ab04\"}) { httpRequests1dGroups(limit: 1, filter: {date_gt: \"2024-06-05\"}) { dimensions { date } sum { requests pageViews } } } } }"
+  };
+
+  try {
+    const response = await axios.post(
+      'https://api.cloudflare.com/client/v4/graphql',
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Key': Token,
+          'X-Auth-EMAIL': 'ableabenaitwe@gmail.com',
+        },
+      }
+    );
+    logger.info('response', response.data);
+    const pageViews = response.data.data.viewer.zones[0].httpRequests1dGroups[0].sum.pageViews;
+    logger.info('pageViews', pageViews);
+    res.status(200).json(pageViews);
+  } catch (error) {
+    logger.error(error.message);
     next(new ApiError(500, 'internal server error'));
   }
 });

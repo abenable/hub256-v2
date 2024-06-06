@@ -10,8 +10,8 @@ const Hub256: React.FC = () => {
   const [blogs, setBlogs] = useState<number>(0);
   const [views, setViews] = useState<number>(0);
 
-  const token = import.meta.env.VITE_CLOUDFLARE_TOKEN;
   const API_URL = import.meta.env.VITE_API_URL;
+  console.log(API_URL);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,39 +42,12 @@ const Hub256: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.post(
-          'https://api.cloudflare.com/client/v4/graphql',
-          {
-            query: `
-            query {
-              viewer {
-                zones(filter: {zoneTag: "cec05905563ee4ccbcb1e2df8185ab04"}) {
-                  httpRequests1dGroups(limit: 1, filter: {date_gt: "2024-06-05"}) {
-                    dimensions { date }
-                    sum { requests pageViews }
-                  }
-                }
-              }
-            }
-          `,
-          },
-          {
-            headers: {
-              'X-Auth-Key': `${token}`,
-              'X-Auth-EMAIL': 'ableabenaitwe@gmail.com',
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-        setViews(
-          response.data.data.viewer.zones[0].httpRequests1dGroups[0].sum
-            .pageViews,
-        );
-      } catch (err) {
-        console.log(err);
+        const response = await axios.get(`${API_URL}/user/pageViews`);
+        setViews(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
-
     fetchData();
   }, []);
 
