@@ -26,6 +26,16 @@ const app = express();
 app.use(cors());
 app.options('*', cors());
 
+// Set Content Security Policy
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            connectSrc: ["'self'", 'https://api.cloudflare.com/client/v4/graphql'],
+        },
+    })
+);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
