@@ -8,7 +8,9 @@ import axios from 'axios';
 const Hub256: React.FC = () => {
   const [subscribers, setSubscribers] = useState<number>(0);
   const [blogs, setBlogs] = useState<number>(0);
+  const [views, setViews] = useState<number>(0);
 
+  const token = import.meta.env.VITE_CLOUDFLARE_TOKEN;
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -36,10 +38,50 @@ const Hub256: React.FC = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post(
+          'https://api.cloudflare.com/client/v4/graphql',
+          {
+            query: `
+            query {
+              viewer {
+                zones(filter: {zoneTag: "cec05905563ee4ccbcb1e2df8185ab04"}) {
+                  httpRequests1dGroups(limit: 1, filter: {date_gt: "2024-06-05"}) {
+                    dimensions { date }
+                    sum { requests pageViews }
+                  }
+                }
+              }
+            }
+          `,
+          },
+          {
+            headers: {
+              'X-Auth-Key': `${token}`,
+              'X-Auth-EMAIL': 'ableabenaitwe@gmail.com',
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        setViews(
+          response.data.data.viewer.zones[0].httpRequests1dGroups[0].sum
+            .pageViews,
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <DefaultLayout>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Visits" total={3000} rate="0.43%" levelUp>
+        <CardDataStats title="Visits" total={views} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
