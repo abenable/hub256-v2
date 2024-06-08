@@ -5,15 +5,13 @@ import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
 
 const SignIn: React.FC = () => {
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/auth/login`, { email, password });
+      await axios.post(`/auth/login`, { email, password });
     } catch (error) {
       console.error(error);
     }

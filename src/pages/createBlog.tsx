@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useState } from 'react';
 
 const CreateBlog = () => {
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [blogImage, setBlogImage] = useState(null);
@@ -23,12 +21,15 @@ const CreateBlog = () => {
     try {
       const data = new FormData();
       data.append('title', title);
-      data.append('descrption', description);
+      data.append('description', description);
       data.append('content', content);
       data.append('blogImage', blogImage);
       data.append('category', category);
 
-      await axios.post(`${API_URL}/blog/post`, data);
+      console.log(API_URL);
+      console.log(data);
+
+      await axios.post(`/blog/post`, data);
     } catch (error) {
       console.error(error);
     }

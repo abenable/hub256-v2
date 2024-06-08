@@ -5,8 +5,6 @@ import DefaultLayout from '../../layout/DefaultLayout';
 import axios from 'axios';
 
 const SignUp: React.FC = () => {
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +12,7 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/auth/register`, {
+      await axios.post(`/auth/register`, {
         username,
         email,
         password,
