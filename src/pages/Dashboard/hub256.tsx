@@ -11,7 +11,6 @@ const Hub256: React.FC = () => {
   const [views, setViews] = useState<number>(0);
 
   const API_URL = import.meta.env.VITE_API_URL;
-  console.log(API_URL);
 
   useEffect(() => {
     const fetchData = async () => {
