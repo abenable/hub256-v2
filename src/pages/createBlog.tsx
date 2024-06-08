@@ -7,14 +7,14 @@ import { useState } from 'react';
 const CreateBlog = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [blogImage, setBlogImage] = useState(null);
+  const [image, setImage] = useState(null);
   const [category, setCategory] = useState('');
   const [content, setContent] = useState('');
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    if (!blogImage) {
+    if (!image) {
       alert('Please select a file.');
       return;
     }
@@ -23,7 +23,7 @@ const CreateBlog = () => {
       data.append('title', title);
       data.append('description', description);
       data.append('content', content);
-      data.append('blogImage', blogImage);
+      data.append('image', image);
       data.append('category', category);
 
       console.log(data);
@@ -86,7 +86,7 @@ const CreateBlog = () => {
                     name="blogImage"
                     formEncType="multipart/form-data"
                     onChange={(e: any) => {
-                      setBlogImage(e.target.files[0]);
+                      setImage(e.target.files[0]);
                     }}
                     className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                   />
