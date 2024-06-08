@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 
-const ChooseCategory: React.FC = ({}) => {
-  const [selectedOption, setSelectedOption] = useState<string>('');
+type ChooseCategoryProps = {
+  category: string;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const ChooseCategory: React.FC<ChooseCategoryProps> = ({
+  category,
+  setCategory,
+}) => {
+  [category, setCategory] = useState<string>('');
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
   const changeTextColor = () => {
@@ -17,9 +25,9 @@ const ChooseCategory: React.FC = ({}) => {
 
       <div className="relative z-20 bg-transparent dark:bg-form-input">
         <select
-          value={selectedOption}
+          value={category}
           onChange={(e) => {
-            setSelectedOption(e.target.value);
+            setCategory(e.target.value);
             changeTextColor();
           }}
           className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary ${
