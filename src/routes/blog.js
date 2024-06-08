@@ -14,7 +14,7 @@ const router = express.Router();
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-router.post('/post', protect, upload.single('blogImage'), async (req, res, next) => {
+router.post('/post', protect, upload.single('image'), async (req, res, next) => {
   const { title, description, content, category } = req.body;
   if (!req.file) {
     return res.status(400).json({ message: "Missing required fields" })

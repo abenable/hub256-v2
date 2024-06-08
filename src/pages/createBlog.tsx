@@ -83,7 +83,7 @@ const CreateBlog = () => {
                   </label>
                   <input
                     type="file"
-                    name="blogImage"
+                    name="image"
                     formEncType="multipart/form-data"
                     onChange={(e: any) => {
                       setImage(e.target.files[0]);
