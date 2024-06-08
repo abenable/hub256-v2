@@ -28,7 +28,7 @@ const CreateBlog = () => {
       data.append('category', category);
 
       const response = await axios.post(`/blog/post`, data);
-      if (response.status === 200) {
+      if (response.status === 201) {
         setIsAlertVisible(true);
       }
     } catch (error) {
