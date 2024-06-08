@@ -46,11 +46,12 @@ app.use(hpp());
 //Routes
 app.use('/', router);
 
-// Serve static files from the React frontend app
+// Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../dist')));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '../dist/index.html'));
+// Catch-all route to serve index.html for all routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist', 'index.html'));
 });
 
 // Error handling middleware
