@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useState } from 'react';
 
 const CreateBlog = () => {
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
@@ -26,9 +27,10 @@ const CreateBlog = () => {
       data.append('image', image);
       data.append('category', category);
 
-      console.log(data);
-
-      await axios.post(`/blog/post`, data);
+      const response = await axios.post(`/blog/post`, data);
+      if (response.status === 200) {
+        setIsAlertVisible(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -37,6 +39,18 @@ const CreateBlog = () => {
     <DefaultLayout>
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="New Blog" />
+        {isAlertVisible && (
+          <div className="flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-9">
+            <div className="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#34D399]">
+              {/* SVG icon */}
+            </div>
+            <div className="w-full">
+              <h5 className="mb-3 text-lg font-semibold text-black dark:text-[#34D399]">
+                Blog created successfully
+              </h5>
+            </div>
+          </div>
+        )}
 
         <div className="col-span-5 xl:col-span-3 md:w-3/4 mx-auto">
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ">
