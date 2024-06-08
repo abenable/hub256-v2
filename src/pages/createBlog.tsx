@@ -9,20 +9,26 @@ const CreateBlog = () => {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [urlToImg, setUrlToImg] = useState('');
+  const [blogImage, setBlogImage] = useState(null);
   const [category, setCategory] = useState('');
   const [content, setContent] = useState('');
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    if (!blogImage) {
+      alert('Please select a file.');
+      return;
+    }
     try {
-      await axios.post(`${API_URL}/blog/post`, {
-        title,
-        description,
-        urlToImg,
-        content,
-        category,
-      });
+      const data = new FormData();
+      data.append('title', title);
+      data.append('descrption', description);
+      data.append('content', content);
+      data.append('blogImage', blogImage);
+      data.append('category', category);
+
+      await axios.post(`${API_URL}/blog/post`, data);
     } catch (error) {
       console.error(error);
     }
@@ -70,13 +76,18 @@ const CreateBlog = () => {
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-1 px-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
                 </div>{' '}
-                <ChooseCategory />
+                <ChooseCategory category={category} setCategory={setCategory} />
                 <div className="mb-4">
                   <label className="mb-3 block text-black dark:text-white">
                     Blog Image
                   </label>
                   <input
                     type="file"
+                    name="blogImage"
+                    formEncType="multipart/form-data"
+                    onChange={(e: any) => {
+                      setBlogImage(e.target.files[0]);
+                    }}
                     className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                   />
                 </div>
