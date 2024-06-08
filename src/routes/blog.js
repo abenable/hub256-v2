@@ -147,13 +147,13 @@ router.get('/latest', async (req, res) => {
     const latestPosts = await BlogModel.find()
       .sort({ publishedAt: -1 })
       .limit(3);
-    for (const blog of blogs) {
+    for (const latestPost of latestPosts) {
       const command = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: blog.image
+        Key: latestPost.image
       })
       const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-      blog.image = url
+      latestPosts.image = url
     }
 
     logger.info('Retrieved latest posts:', latestPosts);
@@ -173,10 +173,10 @@ router.get('/recommended', async (req, res, next) => {
 
     const command = new GetObjectCommand({
       Bucket: process.env.S3_BUCKET_NAME,
-      Key: blog.image
+      Key: recommendedPost.image
     });
     const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-    blog.image = url
+    recommendedPost.image = url
 
     logger.info('Retrieved recommended post:', recommendedPost);
 
