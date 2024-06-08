@@ -1,11 +1,22 @@
 import { ApiError } from './error.js';
 import { UserModel } from '../models/users.js';
 import logger from '../utils/logger.js';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { s3 } from '../utils/util.js';
 
 export const allUsers = async (req, res) => {
   try {
     logger.info('Fetching all users');
     const users = await UserModel.find();
+    for (const user of users) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: user.image
+      })
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      user.image = url
+    }
     logger.info(`Fetched ${users.length} users`);
     res.json(users);
   } catch (error) {
@@ -16,8 +27,14 @@ export const allUsers = async (req, res) => {
 
 export const userProfile = async (req, res) => {
   try {
-    logger.info(`Fetching user profile with id ${req.params.id}`);
     const user = await UserModel.findById(req.params.id);
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: user.image
+    });
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    user.image = url
+
     logger.info(`Fetched user profile with id ${req.params.id}`);
     res.json(user);
   } catch (error) {
@@ -35,6 +52,10 @@ export const delUser = async (req, res) => {
       logger.warn(`User with id ${userId} not found`);
       return res.status(404).json({ message: 'User not found.' });
     }
+    await s3.send(new DeleteObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: deletedUser.image
+    }))
     logger.info(`Deleted user with id ${userId}`);
     res.json({ message: 'User deleted successfully.' });
   } catch (error) {
@@ -54,6 +75,12 @@ export const searchUser = async (req, res) => {
         { lastName: { $regex: query } },
       ],
     });
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: user.image
+    });
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    user.image = url
 
     if (!user) {
       logger.warn(`User with name ${req.query.name} not found`);
