@@ -3,20 +3,38 @@ import { ApiError } from '../controllers/error.js';
 import { BlogModel } from '../models/blogs.js';
 import { protect, restrictTo } from '../controllers/auth.js';
 import logger from '../utils/logger.js';
+import multer from 'multer';
+import { s3 } from '../utils/util.js';
+import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 const router = express.Router();
 
-router.post('/post', protect, async (req, res, next) => {
-  const { title, description, urlToImg, content, category } = req.body;
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
+router.post('/post', protect, upload.single('blogImage'), async (req, res, next) => {
+  const { title, description, content, category } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ message: "Missing required fields" })
+  }
+
+  const imageName = crypto.randomBytes(16).toString('hex');
   try {
     const blog = await BlogModel.create({
       title,
       category,
       description,
       content,
-      urlToImg,
+      image: imageName,
       author: req.user.id,
     });
+
+    await s3.send(new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: imageName,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }))
 
     logger.info('Blog created successfully:', blog);
 
@@ -30,10 +48,17 @@ router.post('/post', protect, async (req, res, next) => {
     next(new ApiError(500, 'internal server error'));
   }
 });
-
 router.get('/all', async (req, res, next) => {
   try {
     const blogs = await BlogModel.find();
+    for (const blog of blogs) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: blog.image
+      })
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      blog.image = url
+    }
     logger.info('Retrieved all blogs', blogs);
     res.status(200).json(blogs);
   } catch (error) {
@@ -45,6 +70,14 @@ router.get('/all', async (req, res, next) => {
 router.get('/category/:category', async (req, res, next) => {
   try {
     const blogs = await BlogModel.find({ category: req.params.category });
+    for (const blog of blogs) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: blog.image
+      })
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      blog.image = url
+    }
     logger.info(
       `Retrieved blogs for category "${req.params.category}":`,
       blogs
@@ -67,6 +100,13 @@ router.get('/id/:id', async (req, res, next) => {
         message: 'Blog not found.',
       });
     }
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: blog.image
+    });
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    blog.image = url
+
 
     logger.info('Retrieved blog by ID:', blog);
 
@@ -82,6 +122,14 @@ router.get('/search', async (req, res, next) => {
     const blogs = await BlogModel.find({
       $text: { $search: req.params.query },
     });
+    for (const blog of blogs) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: blog.image
+      })
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      blog.image = url
+    }
 
     logger.info('Retrieved blogs by search query:', blogs);
 
@@ -97,6 +145,14 @@ router.get('/latest', async (req, res) => {
     const latestPosts = await BlogModel.find()
       .sort({ publishedAt: -1 })
       .limit(3);
+    for (const blog of blogs) {
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: blog.image
+      })
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      blog.image = url
+    }
 
     logger.info('Retrieved latest posts:', latestPosts);
 
@@ -112,6 +168,13 @@ router.get('/recommended', async (req, res, next) => {
     const recommendedPost = await BlogModel.findOne({
       recommendedByEditor: true,
     });
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: blog.image
+    });
+    const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    blog.image = url
 
     logger.info('Retrieved recommended post:', recommendedPost);
 
@@ -133,6 +196,10 @@ router.delete('/delete/:id', protect, async (req, res, next) => {
       });
     }
     if (req.user.id == blog.author.id || req.user.role == 'admin') {
+      await s3.send(new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: blog.image
+      }))
       const response = await BlogModel.findByIdAndDelete(blog.id);
 
       logger.info('Deleted blog:', response);
