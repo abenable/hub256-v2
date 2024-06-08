@@ -26,7 +26,6 @@ const CreateBlog = () => {
       data.append('blogImage', blogImage);
       data.append('category', category);
 
-      console.log(API_URL);
       console.log(data);
 
       await axios.post(`/blog/post`, data);
