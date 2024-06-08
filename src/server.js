@@ -22,6 +22,7 @@ const __dirname = getDirname(import.meta.url);
 
 const app = express();
 
+app.set('trust proxy', true);
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
 app.options('*', cors());
