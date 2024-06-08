@@ -6,6 +6,7 @@ import logger from '../utils/logger.js';
 import multer from 'multer';
 import { s3 } from '../utils/util.js';
 import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const router = express.Router();
 
