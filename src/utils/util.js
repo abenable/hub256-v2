@@ -4,6 +4,10 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 import { S3Client } from '@aws-sdk/client-s3';
 
+const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID
+const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY
+const awsRegion = process.env.AWS_REGION
+
 export const getDirname = (moduleUrl) => {
   return path.dirname
     (fileURLToPath(moduleUrl));
