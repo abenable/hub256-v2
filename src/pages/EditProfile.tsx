@@ -1,13 +1,57 @@
+import { useState } from 'react';
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import userThree from '../images/user/user-03.png';
 import DefaultLayout from '../layout/DefaultLayout';
+import axios from 'axios';
 
 const EditProfile = () => {
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
+  const [image, setImage] = useState(null);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('firstName', firstName);
+    data.append('lastName', lastName);
+    data.append('userName', userName);
+    data.append('email', email);
+    data.append('bio', bio);
+
+    if (image) {
+      data.append('image', image);
+    }
+
+    try {
+      const response = await axios.patch(`/user/profile`, data);
+      if (response.status === 201) {
+        setIsAlertVisible(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-270">
-        <Breadcrumb pageName="Edit Profile" />
-
+        <Breadcrumb pageName="Edit Profile" />{' '}
+        {isAlertVisible && (
+          <div className="flex w-full border-l-6 border-[#34D399] bg-[#34D399] bg-opacity-[15%] px-7 py-8 shadow-md dark:bg-[#1B1B24] dark:bg-opacity-30 md:p-9">
+            <div className="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#34D399]">
+              {/* SVG icon */}
+            </div>
+            <div className="w-full">
+              <h5 className="mb-3 text-lg font-semibold text-black dark:text-[#34D399]">
+                Profile updated successfully
+              </h5>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -17,7 +61,7 @@ const EditProfile = () => {
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
                       <label
@@ -28,6 +72,8 @@ const EditProfile = () => {
                       </label>
                       <div className="relative">
                         <input
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
                           className="w-full rounded border border-stroke bg-gray py-3 pl-4.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
                           name="firstName"
@@ -44,6 +90,8 @@ const EditProfile = () => {
                         Last Name{' '}
                       </label>
                       <input
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="text"
                         name="lastName"
@@ -59,6 +107,8 @@ const EditProfile = () => {
                       Username
                     </label>
                     <input
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
                       className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                       type="text"
                       name="Username"
@@ -100,6 +150,8 @@ const EditProfile = () => {
                         </svg>
                       </span>
                       <input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         type="email"
                         name="emailAddress"
@@ -148,6 +200,8 @@ const EditProfile = () => {
                       </span>
 
                       <textarea
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                         className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         name="bio"
                         id="bio"
@@ -158,10 +212,7 @@ const EditProfile = () => {
                   </div>
 
                   <div className="flex justify-end gap-4.5">
-                    <button
-                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="submit"
-                    >
+                    <button className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white">
                       Cancel
                     </button>
                     <button
@@ -183,7 +234,7 @@ const EditProfile = () => {
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit}>
                   <div className="mb-4 flex items-center gap-3">
                     <div className="h-14 w-14 rounded-full">
                       <img src={userThree} alt="User" />
@@ -196,9 +247,6 @@ const EditProfile = () => {
                         <button className="text-sm hover:text-primary">
                           Delete
                         </button>
-                        <button className="text-sm hover:text-primary">
-                          Update
-                        </button>
                       </span>
                     </div>
                   </div>
@@ -209,7 +257,10 @@ const EditProfile = () => {
                   >
                     <input
                       type="file"
-                      accept="image/*"
+                      name="image"
+                      id="image"
+                      formEncType="multipart/form-data"
+                      onChange={(e: any) => setImage(e.target.files[0])}
                       className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
@@ -251,10 +302,7 @@ const EditProfile = () => {
                   </div>
 
                   <div className="flex justify-end gap-4.5">
-                    <button
-                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="submit"
-                    >
+                    <button className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white">
                       Cancel
                     </button>
                     <button
