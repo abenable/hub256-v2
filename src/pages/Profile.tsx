@@ -1,21 +1,30 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import DefaultLayout from '../layout/DefaultLayout';
 import CoverOne from '../images/cover/cover-01.png';
-import userSix from '../images/user/user-06.png';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Loader from '../common/Loader';
 
 const Profile = () => {
-  const userInfo = {
-    username: 'abenable',
-    email: 'dev@hub256.live',
-    profilePic: 'linkToImage',
-    bgPic: 'linkToImage',
-    role: 'admin',
-    posts: '32',
-    bio: 'new Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet. Etiam dictum dapibus ultricies. Sed vel aliquet libero. Nunc a augue fermentum, pharetra ligula sed, aliquam lacus.',
-  };
+  const [userInfo, setUserInfo] = useState({});
 
-  return (
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get('/user/profile');
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  return userInfo ? (
+    <Loader />
+  ) : (
     <DefaultLayout>
       <Breadcrumb pageName="Profile" />
 
@@ -62,7 +71,7 @@ const Profile = () => {
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
           <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
             <div className="relative drop-shadow-2">
-              <img src={userSix} alt="profile" />
+              <img src={userInfo.image} alt="profile" />
               <label
                 htmlFor="profile"
                 className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
@@ -99,7 +108,7 @@ const Profile = () => {
           </div>
           <div className="mt-4">
             <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-              {userInfo.username}{' '}
+              {userInfo.userName}{' '}
             </h3>
             <p className="font-medium">{userInfo.role}</p>
             <div className="mx-auto mt-4.5 mb-5.5 grid max-w-94 grid-cols-2 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
