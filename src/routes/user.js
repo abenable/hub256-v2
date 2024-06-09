@@ -92,8 +92,12 @@ router.get('/subscribers', async (req, res, next) => {
 });
 
 router.get('/pageViews', async (req, res, next) => {
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 2);
+  const formattedDate = currentDate.toISOString().split('T')[0];
+
   const data = {
-    "query": "query { viewer { zones(filter: {zoneTag: \"cec05905563ee4ccbcb1e2df8185ab04\"}) { httpRequests1dGroups(limit: 1, filter: {date_gt: \"2024-06-05\"}) { dimensions { date } sum { requests pageViews } } } } }"
+    "query": `query { viewer { zones(filter: {zoneTag: \"cec05905563ee4ccbcb1e2df8185ab04\"}) { httpRequests1dGroups(limit: 1, filter: {date_gt: \"${formattedDate}\"}) { dimensions { date } sum { requests pageViews } } } } }`
   };
 
   try {
