@@ -8,11 +8,17 @@ import {
   allUsers,
   delUser,
   searchUser,
+  updateProfile,
   userProfile,
 } from '../controllers/user.js';
+import multer from 'multer';
 
 const router = express.Router();
 const Token = process.env.CLOUDFLARE_TOKEN;
+
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
 
 router.delete(
   '/delete/:userId',
@@ -37,6 +43,11 @@ router.get('', protect, restrictTo('admin'), (req, res, next) => {
 router.get('/profile/:id', protect, (req, res, next) => {
   logger.info('Get user profile request received');
   userProfile(req, res, next);
+});
+
+router.patch('/profile', protect, upload.single('image'), (req, res) => {
+  logger.info('Update user profile request received');
+  updateProfile(req, res);
 });
 
 router.post('/subscribe', async (req, res, next) => {
