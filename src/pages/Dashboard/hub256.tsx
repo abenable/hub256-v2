@@ -10,12 +10,10 @@ const Hub256: React.FC = () => {
   const [blogs, setBlogs] = useState<number>(0);
   const [views, setViews] = useState<number>(0);
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/user/subscribers`);
+        const response = await axios.get(`/user/subscribers`);
         setSubscribers(response.data.length);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -28,7 +26,7 @@ const Hub256: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/blog/all`);
+        const response = await axios.get(`/blog/all`);
         setBlogs(response.data.length);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -41,7 +39,7 @@ const Hub256: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/user/pageViews`);
+        const response = await axios.get(`/user/pageViews`);
         setViews(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
