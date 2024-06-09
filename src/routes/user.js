@@ -15,6 +15,7 @@ import multer from 'multer';
 import { UserModel } from '../models/users.js';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { s3 } from '../utils/util.js';
 
 const router = express.Router();
 const Token = process.env.CLOUDFLARE_TOKEN;
