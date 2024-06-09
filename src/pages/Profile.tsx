@@ -22,7 +22,7 @@ const Profile = () => {
     fetchUserInfo();
   }, []);
 
-  return userInfo ? (
+  return !userInfo ? (
     <Loader />
   ) : (
     <DefaultLayout>
