@@ -45,6 +45,27 @@ router.get('/profile/:id', protect, (req, res, next) => {
   userProfile(req, res, next);
 });
 
+router.get('/profile', protect, async (req, res, next) => {
+  logger.info('Get user profile request received');
+  if (req.user) {
+    try {
+      const user = await UserModel.findById(req.user.id);
+      const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: user.image
+      });
+      const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      user.image = url
+
+      logger.info(`Fetched user profile with id ${user.id}`);
+      res.json(user);
+    } catch (error) {
+      logger.error(`An error occurred while fetching user profile: ${error}`);
+      new ApiError(500, 'An error occurred while fetching user profile.');
+    }
+  };
+});
+
 router.patch('/profile', protect, upload.single('image'), (req, res) => {
   logger.info('Update user profile request received');
   updateProfile(req, res);
