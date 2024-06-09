@@ -3,7 +3,9 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
 const userSchema = new mongoose.Schema({
-  username: { type: String },
+  userName: { type: String },
+  firstName: { type: String },
+  lastName: { type: String },
   email: { type: String, required: true, unique: true },
   image: { type: String },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
