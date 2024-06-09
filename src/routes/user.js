@@ -12,6 +12,9 @@ import {
   userProfile,
 } from '../controllers/user.js';
 import multer from 'multer';
+import { UserModel } from '../models/users.js';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 
 const router = express.Router();
 const Token = process.env.CLOUDFLARE_TOKEN;
